@@ -69,6 +69,7 @@ abstract class TweetSet {
    * and be implemented in the subclasses?
    */
   def mostRetweeted: Tweet
+  def mostRetweetedAcc(acc: Tweet):Tweet
   def isEmpty: Boolean
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -113,10 +114,10 @@ abstract class TweetSet {
 class Empty extends TweetSet {
 
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
-    new Empty
+    acc
   }
 
-  override def union(that: TweetSet): TweetSet = {
+  def union(that: TweetSet): TweetSet = {
     that
   }
 
@@ -124,6 +125,10 @@ class Empty extends TweetSet {
     throw new java.util.NoSuchElementException
   }
 
+  def mostRetweetedAcc(acc: Tweet):Tweet = {
+    acc
+  }
+  
   def isEmpty: Boolean = {
     true
   }
@@ -155,53 +160,71 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
       a
   }
 
-  override def union(that: TweetSet): TweetSet = {
-    ((left union right) union that).incl(elem)
+  def union(that: TweetSet): TweetSet = {
+    //filter( x => left.contains(x) || right.contains(x) || x == elem || that.contains(x))
+    (left union (right union that)) incl elem
   }
 
+//  def mostRetweeted: Tweet = {
+//    var max = elem
+//    //val max1 = if (!left.isEmpty) left.mostRetweeted else null
+//    //val max2 = if (!right.isEmpty) right.mostRetweeted else null
+//    
+//    if (!left.isEmpty)  {
+//      if (max.retweets < left.mostRetweeted.retweets)
+//        max = left.mostRetweeted
+//    }
+//    else
+//      max
+//      
+//    if (!right.isEmpty)  {
+//      if (max.retweets < right.mostRetweeted.retweets)
+//        max = right.mostRetweeted
+//    }
+//    else
+//      max
+//  }
+
   def mostRetweeted: Tweet = {
-    val max = elem
-    
-    if(!left.isEmpty)
+    mostRetweetedAcc(null)
+  }
+  
+  def mostRetweetedAcc(acc:Tweet) :Tweet = {
+    if (acc != null)
     {
-      val max1 = left.mostRetweeted
-      if(!right.isEmpty)
+      if(elem.retweets > acc.retweets)
       {
-        val max2 = right.mostRetweeted
-        
-        if (max.retweets > max1.retweets)
-        {
-          if(max.retweets > max2.retweets)
-            max
-          else
-            max2
-        }
-        else
-        {
-          if(max1.retweets > max2.retweets)
-            max1
-          else
-            max2
-        }
+        right.mostRetweetedAcc(left.mostRetweetedAcc(elem))
       }
       else
       {
-        if(max.retweets > max1.retweets)
-          max
-        else
-          max1
+        right.mostRetweetedAcc(left.mostRetweetedAcc(acc))
       }
     }
     else
-      max
+    {
+      right.mostRetweetedAcc(left.mostRetweetedAcc(elem))
+    }
   }
-
+  
+//  def mostRetweeted: Tweet = {
+//    mostRetweetedAcc(scala.Null)
+//  }
+  
+//  def mostRetweetedAcc(acc: Tweet): Tweet = {
+//    if(elem.retweets > acc.retweets)
+//      left.mostRetweeted(elem)
+//    else
+//      
+//  }
+  
   def isEmpty: Boolean = {
     false
   }
 
   def descendingByRetweet: TweetList = {
     val t = mostRetweeted
+
     val a = remove(t)
     new Cons(t, a.descendingByRetweet)
   }
@@ -272,5 +295,7 @@ object GoogleVsApple {
 
 object Main extends App {
   // Print the trending tweets
-  GoogleVsApple.trending foreach println
+  //GoogleVsApple.googleTweets foreach println
+  GoogleVsApple.appleTweets.descendingByRetweet foreach println
+  //GoogleVsApple.trending foreach println
 }

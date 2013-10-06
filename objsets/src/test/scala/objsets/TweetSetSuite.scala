@@ -44,6 +44,14 @@ class TweetSetSuite extends FunSuite {
     }
   }
 
+  test("filter: tweet with 321 retweets") {
+    new TestSets {
+      //assert(size(set5.filter(tw => tw.retweets == 321)) === 0)
+      //TweetReader.allTweets.foreach(x => print(x))
+      assert(size(TweetReader.allTweets.filter(tw => tw.retweets == 321)) == 1)
+    }
+  }
+
   test("union: set4c and set4d") {
     new TestSets {
       assert(size(set4c.union(set4d)) === 4)
@@ -71,8 +79,17 @@ class TweetSetSuite extends FunSuite {
   test("descending: set5") {
     new TestSets {
       val trends = set5.descendingByRetweet
+      //trends foreach println
       assert(!trends.isEmpty)
       assert(trends.head.user == "a" || trends.head.user == "b")
     }
+  }
+  
+  test("alltweets") {
+    TweetReader.allTweets
+  }
+  
+  test("GoogleVsApple") {
+     //GoogleVsApple.trending foreach println
   }
 }
