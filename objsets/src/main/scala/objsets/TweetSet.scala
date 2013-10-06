@@ -165,58 +165,20 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     (left union (right union that)) incl elem
   }
 
-//  def mostRetweeted: Tweet = {
-//    var max = elem
-//    //val max1 = if (!left.isEmpty) left.mostRetweeted else null
-//    //val max2 = if (!right.isEmpty) right.mostRetweeted else null
-//    
-//    if (!left.isEmpty)  {
-//      if (max.retweets < left.mostRetweeted.retweets)
-//        max = left.mostRetweeted
-//    }
-//    else
-//      max
-//      
-//    if (!right.isEmpty)  {
-//      if (max.retweets < right.mostRetweeted.retweets)
-//        max = right.mostRetweeted
-//    }
-//    else
-//      max
-//  }
-
   def mostRetweeted: Tweet = {
-    mostRetweetedAcc(null)
+    mostRetweetedAcc(elem)
   }
   
   def mostRetweetedAcc(acc:Tweet) :Tweet = {
-    if (acc != null)
-    {
-      if(elem.retweets > acc.retweets)
-      {
-        right.mostRetweetedAcc(left.mostRetweetedAcc(elem))
-      }
-      else
-      {
-        right.mostRetweetedAcc(left.mostRetweetedAcc(acc))
-      }
-    }
-    else
+    if(elem.retweets > acc.retweets)
     {
       right.mostRetweetedAcc(left.mostRetweetedAcc(elem))
     }
+    else
+    {
+      right.mostRetweetedAcc(left.mostRetweetedAcc(acc))
+    }
   }
-  
-//  def mostRetweeted: Tweet = {
-//    mostRetweetedAcc(scala.Null)
-//  }
-  
-//  def mostRetweetedAcc(acc: Tweet): Tweet = {
-//    if(elem.retweets > acc.retweets)
-//      left.mostRetweeted(elem)
-//    else
-//      
-//  }
   
   def isEmpty: Boolean = {
     false
